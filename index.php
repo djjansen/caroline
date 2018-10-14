@@ -28,28 +28,7 @@ console.log(xmlhttp.responseText);
         xmlhttp.open("GET","xm.php?q="+status+"&rdout="+read,true);
         xmlhttp.send();
 }
-/*
-      	hours = document.getElementById("hours");
-        minutes = document.getElementById("minutes");
-        seconds = document.getElementById("seconds");
-*/        // if less than a min
-/*
-function gethours() {
-    // hours is minutes divided by 60, rounded down
-    hrs = fetch(0,"hours");
-    hrs = ("0" + hrs).slice(-2);
-}
-function getminutes() {
-    // minutes is seconds divided by 60, rounded down
-    mins = fetch(1,"minutes");
-    mins = ("0" + mins).slice(-2);
-}
-function getseconds() {
-    // take mins remaining (as seconds) away from total seconds remaining
-    secs = fetch(2,"seconds");
-    secs = ("0" + secs).slice(-2);
-}
-*/
+
 function reset() {
 console.log("Hi");
 document.getElementById("hours").innerHTML="00";
@@ -110,23 +89,41 @@ if ((init_request.readyState == 4 && init_request.status >= 200 && init_request.
     totalMins = ("0" + totalMins.toString()).slice(-2);
     totalSecs = ("0" + totalSecs.toString()).slice(-2);
 if (s[1] == "pause") {
-    document.getElementById(ele).innerHTML=t[ind];
-    document.getElementById(ele2).innerHTML=t[ind2];
-    document.getElementById(ele3).innerHTML=t[ind3 ];
+    totalHrs=t[ind];
+    totalMins=t[ind2];
+    totalSecs=t[ind3];
     document.getElementById('Pause').innerHTML="resume";
     flagTimer='pause';
 } else if (s[1] == "clear") {
-    document.getElementById(ele).innerHTML=t[ind];
-    document.getElementById(ele2).innerHTML=t[ind2];
-    document.getElementById(ele3).innerHTML=t[ind3];
+    totalHrs=t[ind];
+    totalMins=t[ind2];
+    totalSecs=t[ind3];
     document.getElementById('Pause').innerHTML="start";
     flagTimer='start';
 }else {
-    document.getElementById(ele).innerHTML=totalHrs;
-    document.getElementById(ele2).innerHTML=totalMins;
-    document.getElementById(ele3).innerHTML=totalSecs;
     document.getElementById('Pause').innerHTML="pause";
     flagTimer='resume';
+}
+document.getElementById(ele).innerHTML=totalHrs;
+document.getElementById(ele2).innerHTML=totalMins;
+document.getElementById(ele3).innerHTML=totalSecs;
+var ou_hours = totalHrs;
+var ou_minutes = totalMins;
+var ou_seconds = totalSecs;
+var rawTime = parseInt(ou_seconds) + (parseInt(ou_minutes) * 60) + (parseInt(ou_hours * 3600));
+if ((rawTime % 60 == 1) && (document.getElementById('Pause').innerHTML=="pause")) {
+	var overunder = 240 + rawTime + ((Math.floor((Math.random() * 10) + 1))*60);
+	var ou_hrs = Math.floor(overunder / 3600);
+	var ou_mins = Math.floor((overunder % 3600) / 60);
+	var ou_secs = Math.floor(overunder % 60);
+	
+	ou_hrs = ("0" + ou_hrs.toString()).slice(-2);
+    ou_mins = ("0" + ou_mins.toString()).slice(-2);
+    ou_secs = ("0" + ou_secs.toString()).slice(-2);
+
+	document.getElementById("ovrundrhours").innerHTML = ou_hrs;
+	document.getElementById("ovrundrminutes").innerHTML = ou_mins;
+	document.getElementById("ovrundrseconds").innerHTML = ou_secs;
 }
 setTimeout(fetch,1000,0,"hours",1,"minutes",2,"seconds")
 }
@@ -170,6 +167,13 @@ init_request.send();
     </div>
     <button id="Pause" class="btn" onClick="pause();">start</button>
     <button id="Clear" class="btn" onClick="reset();">clear</button>
+</div>
+<br>
+<div id="ovrundr" style="font-size: 2em; width: 16em,alignment:center;text-align:center">
+over/under<br>
+   <span id="ovrundrhours" class="time">--</span> : 
+   <span id="ovrundrminutes" class="time">--</span> : 
+   <span id="ovrundrseconds" class="time">--</span>
 </div>
 <script>
 fetch(0,"hours",1,"minutes",2,"seconds");
