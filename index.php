@@ -4,12 +4,20 @@
 <script type="text/javascript">
 paused = false;
 function ajax(funct) {
-	var hrs = document.getElementById("hours").innerHTML;
+		var hrs = document.getElementById("hours").innerHTML;
         var mins = document.getElementById("minutes").innerHTML;
         var secs = document.getElementById("seconds").innerHTML;
         var read = hrs+":"+mins+":"+secs;
-        console.log(read);
         var status = document.getElementById(funct).innerHTML;
+        if (funct == 'Clear') {
+        	document.getElementById("ovrundrhours").innerHTML = "--";
+			document.getElementById("ovrundrminutes").innerHTML = "--";
+			document.getElementById("ovrundrseconds").innerHTML = "--";
+        }
+        var ouHrs = document.getElementById("ovrundrhours").innerHTML;
+        var ouMins = document.getElementById("ovrundrminutes").innerHTML;
+        var ouSecs = document.getElementById("ovrundrseconds").innerHTML;
+        var ouString = ouHrs+":"+ouMins+":"+ouSecs;
         if (window.XMLHttpRequest) {
             // code for IE7+, Firefox, Chrome, Opera, Safari
             xmlhttp = new XMLHttpRequest();
@@ -24,8 +32,8 @@ console.log(xmlhttp.responseText);
 	    else {
 	console.log(xmlhttp.status);
 	    }
-        };
-        xmlhttp.open("GET","xm.php?q="+status+"&rdout="+read,true);
+        }
+        xmlhttp.open("GET","xm.php?q="+status+"&rdout="+read+"&ovund="+ouString,true);
         xmlhttp.send();
 }
 
@@ -40,6 +48,16 @@ flagTimer='start';
 }
 function pause() {
   if (flagTimer=='start') {
+  	var overunder_init = 240 + ((Math.floor((Math.random() * 10) + 1))*60);
+	var ou_hrs_init = Math.floor(overunder_init / 3600);
+	var ou_mins_init = Math.floor((overunder_init % 3600) / 60);
+	var ou_secs_init = Math.floor(overunder_init % 60);	
+	ou_hrs_init = ("0" + ou_hrs_init.toString()).slice(-2);
+    ou_mins_init = ("0" + ou_mins_init.toString()).slice(-2);
+    ou_secs_init = ("0" + ou_secs_init.toString()).slice(-2);
+    document.getElementById("ovrundrhours").innerHTML = ou_hrs_init;
+	document.getElementById("ovrundrminutes").innerHTML = ou_mins_init;
+	document.getElementById("ovrundrseconds").innerHTML = ou_secs_init;
     ajax('Pause');
     document.getElementById('Pause').innerHTML="pause";
     flagTimer='resume';
@@ -65,10 +83,10 @@ if (window.XMLHttpRequest) {
         }
 init_request.onreadystatechange = function() {
 if ((init_request.readyState == 4 && init_request.status >= 200 && init_request.status < 300) || (init_request.status === 0 && !!init_request.responseXML)) {
-    var count = 120;
     var s = init_request.responseText.split(",");
     var r = s[0].split(":");
     var t = s[2].split(":");
+    var o = s[3].split(":");
     var totalHrs = 0;
     var totalMins = 0;
     var totalSecs = 0;
@@ -83,8 +101,6 @@ if ((init_request.readyState == 4 && init_request.status >= 200 && init_request.
        ++totalHrs;
        }
     totalHrs = totalHrs+parseInt(t[0])+parseInt(r[0]);
-    console.log(s);
-    console.log(r);
     totalHrs = ("0" + totalHrs.toString()).slice(-2);
     totalMins = ("0" + totalMins.toString()).slice(-2);
     totalSecs = ("0" + totalSecs.toString()).slice(-2);
@@ -107,24 +123,29 @@ if (s[1] == "pause") {
 document.getElementById(ele).innerHTML=totalHrs;
 document.getElementById(ele2).innerHTML=totalMins;
 document.getElementById(ele3).innerHTML=totalSecs;
+
 var ou_hours = totalHrs;
 var ou_minutes = totalMins;
 var ou_seconds = totalSecs;
 var rawTime = parseInt(ou_seconds) + (parseInt(ou_minutes) * 60) + (parseInt(ou_hours * 3600));
-if ((rawTime % 60 == 1) && (document.getElementById('Pause').innerHTML=="pause")) {
+if ((rawTime % 60 == 1) && (rawTime > 60) && (document.getElementById('Pause').innerHTML=="pause")) {
 	var overunder = 240 + rawTime + ((Math.floor((Math.random() * 10) + 1))*60);
-	var ou_hrs = Math.floor(overunder / 3600);
-	var ou_mins = Math.floor((overunder % 3600) / 60);
-	var ou_secs = Math.floor(overunder % 60);
+	ou_hrs = Math.floor(overunder / 3600);
+	ou_mins = Math.floor((overunder % 3600) / 60);
+	ou_secs = Math.floor(overunder % 60);
 	
 	ou_hrs = ("0" + ou_hrs.toString()).slice(-2);
     ou_mins = ("0" + ou_mins.toString()).slice(-2);
     ou_secs = ("0" + ou_secs.toString()).slice(-2);
-
-	document.getElementById("ovrundrhours").innerHTML = ou_hrs;
-	document.getElementById("ovrundrminutes").innerHTML = ou_mins;
-	document.getElementById("ovrundrseconds").innerHTML = ou_secs;
+} else {
+	ou_hrs = o[0];
+	ou_mins = o[1];
+	ou_secs = o[2];
 }
+document.getElementById("ovrundrhours").innerHTML = ou_hrs;
+document.getElementById("ovrundrminutes").innerHTML = ou_mins;
+document.getElementById("ovrundrseconds").innerHTML = ou_secs;
+
 setTimeout(fetch,1000,0,"hours",1,"minutes",2,"seconds")
 }
 else {
