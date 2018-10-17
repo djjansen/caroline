@@ -60,10 +60,14 @@ else {
 	console.log(xmlhttp.status);
 }
 }
-xmlhttp.open("GET","OverUnder.php?ovund="+ouString+"&rdout="+read,true);
+xmlhttp.open("GET","OverUnder.php?ovund="+ouString+"&rdout="+read+"&funct="+funct,true);
 xmlhttp.send();
 }
-
+function vote(selection) {
+document.getElementById("bets").style.display="none";
+document.getElementById("charts").style.display="block";
+OvrUnd(selection);
+}
 function reset() {
 document.getElementById("hours").innerHTML="00";
 document.getElementById("minutes").innerHTML="00";
@@ -204,13 +208,25 @@ init_request.send();
   border-radius: 5px;
   border-color: black;
 }
+#Over {
+  border: none;
+  background-color: white;
+  font-size:4em;
+   cursor: pointer;
+}
+#Under {
+  border: none;
+  background-color: white;
+  font-size:4em;
+   cursor: pointer;
+}
 </style>
 </head>
 
 <body>
 <div id="widgets" style="alignment:center;text-align:center">
    <span id="title" style="font-size:3em;font-family:sans-serif">We're currently under construction!</span><br>
-  <span id="subtitle" style="font-size:1.5em;font-family:sans-serif"">For now, you can use this handy timer</span><br>
+  <span id="subtitle" style="font-size:1.5em;font-family:sans-serif">For now, you can use this handy timer</span><br>
   <br>
   <br><div id="timer" style="font-size: 4em; width: 16em,alignment:center">
    <span id="hours" class="time">00</span> : 
@@ -226,6 +242,14 @@ over/under<br>
    <span id="ovrundrhours" class="time">--</span> : 
    <span id="ovrundrminutes" class="time">--</span> : 
    <span id="ovrundrseconds" class="time">--</span>
+   <br>
+</div>
+<div id="bets" style="text-align:center">
+   <button id="Over" class="btn" onClick="vote('Over');">+</button><span style="font-size:4em">/</span>   
+   <button id="Under" class="btn" onClick="vote('Under');">-</button>
+</div>
+<div id="charts" style="display:none;text-align:center;alignment:center">
+	Hello World!
 </div>
 <script>
 fetch(0,"hours",1,"minutes",2,"seconds");
