@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+
 <script type="text/javascript">
 paused = false;
 flagTimer='start';
@@ -63,11 +65,16 @@ else {
 xmlhttp.open("GET","OverUnder.php?ovund="+ouString+"&rdout="+read+"&funct="+funct,true);
 xmlhttp.send();
 }
+
 function vote(selection) {
 document.getElementById("bets").style.display="none";
 document.getElementById("charts").style.display="block";
 OvrUnd(selection);
+chart.data.datasets[0].data=[UnderCount];
+chart.data.datasets[1].data=[OverCount];
+chart.update();
 }
+
 function reset() {
 document.getElementById("hours").innerHTML="00";
 document.getElementById("minutes").innerHTML="00";
@@ -76,6 +83,8 @@ document.getElementById('Pause').innerHTML="start";
 ajax('Clear');
 flagTimer='start';
 OvrUnd('Clear');
+document.getElementById("charts").style.display="none";
+document.getElementById("bets").style.display="none";
 }
 function pause() {
   if (flagTimer=='start') {
@@ -93,6 +102,7 @@ function pause() {
     ajax('Pause');
     document.getElementById('Pause').innerHTML="pause";
     flagTimer='resume';
+    document.getElementById("bets").style.display="block";
   }  else if (flagTimer=='resume') {
     ajax('Pause');
     document.getElementById('Pause').innerHTML="resume";
@@ -104,6 +114,10 @@ function pause() {
     document.getElementById('Pause').innerHTML="pause";
   }
 }
+
+var OverCount = 0;
+var UnderCount = 0;
+
 function fetch(ind,ele,ind2,ele2,ind3,ele3) {
 if (window.XMLHttpRequest) {
             // code for IE7+, Firefox, Chrome, Opera, Safari
@@ -114,10 +128,13 @@ if (window.XMLHttpRequest) {
         }
 init_request.onreadystatechange = function() {
 if ((init_request.readyState == 4 && init_request.status >= 200 && init_request.status < 300) || (init_request.status === 0 && !!init_request.responseXML)) {
+	console.log(init_request.responseText);
     var s = init_request.responseText.split(",");
     var r = s[0].split(":");
     var t = s[2].split(":");
     var o = s[3].split(":");
+    OverCount = s[4];
+    UnderCount = s[5];
     var totalHrs = 0;
     var totalMins = 0;
     var totalSecs = 0;
@@ -181,10 +198,11 @@ if ((rawTime % 60 == 0) && (rawTime > 60) && (document.getElementById('Pause').i
 	    OvrUnd('Minute');
 }
 
+chart.data.datasets[0].data=[UnderCount];
+chart.data.datasets[1].data=[OverCount];
+chart.update();
+
 setTimeout(fetch,1000,0,"hours",1,"minutes",2,"seconds")
-}
-else {
-    console.log(init_request.status);
 }
 }
 init_request.open("GET","req.php", true);
@@ -244,13 +262,49 @@ over/under<br>
    <span id="ovrundrseconds" class="time">--</span>
    <br>
 </div>
-<div id="bets" style="text-align:center">
+<div id="bets" style="text-align:center;display:none">
    <button id="Over" class="btn" onClick="vote('Over');">+</button><span style="font-size:4em">/</span>   
    <button id="Under" class="btn" onClick="vote('Under');">-</button>
 </div>
-<div id="charts" style="display:none;text-align:center;alignment:center">
-	Hello World!
+<div id="charts" style="display:none;text-align:center;margin:auto;height:25vh; width:50vw">
+<canvas id="myChart" style="display:inline"></canvas>
 </div>
+<script>
+var ctx = document.getElementById('myChart').getContext('2d');
+var chart = new Chart(ctx, {
+    // The type of chart we want to create
+    type: 'bar',
+
+    // The data for our dataset
+    data: {
+        labels: ["Over / Under"],
+        datasets: [{
+            label: "Under",
+            backgroundColor: 'rgb(255, 99, 132)',
+            borderColor: 'rgb(255, 99, 132)',
+            data: [0],
+        },
+        {
+            label: "Over",
+            backgroundColor: 'rgb(255, 165, 0)',
+            borderColor: 'rgb(255, 165, 0)',
+            data: [0],
+        }]
+    },
+
+    // Configuration options go here
+    options: {
+    	scales: {
+            yAxes: [{
+                ticks: {
+                    suggestedMin: 0,
+                    suggestedMax: 10
+                }
+            }]
+        }
+    }
+});
+</script>
 <script>
 fetch(0,"hours",1,"minutes",2,"seconds");
 </script>
