@@ -73,6 +73,7 @@ OvrUnd(selection);
 chart.data.datasets[0].data=[UnderCount];
 chart.data.datasets[1].data=[OverCount];
 chart.update();
+voteCount++;
 }
 
 function reset() {
@@ -117,6 +118,7 @@ function pause() {
 
 var OverCount = 0;
 var UnderCount = 0;
+var voteCount = 0;
 
 function fetch(ind,ele,ind2,ele2,ind3,ele3) {
 if (window.XMLHttpRequest) {
@@ -158,15 +160,27 @@ if (s[1] == "pause") {
     totalSecs=t[ind3];
     document.getElementById('Pause').innerHTML="resume";
     flagTimer='pause';
+    if (voteCount == 0) {
+	    document.getElementById("charts").style.display="block";
+    	document.getElementById("bets").style.display="block";
+    }
+
 } else if (s[1] == "clear") {
+	voteCount=0;
     totalHrs=t[ind];
     totalMins=t[ind2];
     totalSecs=t[ind3];
     document.getElementById('Pause').innerHTML="start";
     flagTimer='start';
+    document.getElementById("charts").style.display="none";
+    document.getElementById("bets").style.display="none";
 }else {
     document.getElementById('Pause').innerHTML="pause";
     flagTimer='resume';
+    if (voteCount == 0) {
+	    document.getElementById("charts").style.display="block";
+    	document.getElementById("bets").style.display="block";
+    }
 }
 document.getElementById(ele).innerHTML=totalHrs;
 document.getElementById(ele2).innerHTML=totalMins;
