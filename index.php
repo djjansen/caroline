@@ -68,10 +68,11 @@ xmlhttp.send();
 
 function vote(selection) {
 document.getElementById("bets").style.display="none";
+document.getElementById("whitespace").style.display="block";
 document.getElementById("charts").style.display="block";
 OvrUnd(selection);
-chart.data.datasets[0].data=[UnderCount];
-chart.data.datasets[1].data=[OverCount];
+chart.data.datasets[0].data=[OverCount];
+chart.data.datasets[1].data=[UnderCount];
 chart.update();
 voteCount++;
 }
@@ -86,6 +87,7 @@ flagTimer='start';
 OvrUnd('Clear');
 document.getElementById("charts").style.display="none";
 document.getElementById("bets").style.display="none";
+document.getElementById("whitespace").style.display="block";
 }
 function pause() {
   if (flagTimer=='start') {
@@ -103,7 +105,12 @@ function pause() {
     ajax('Pause');
     document.getElementById('Pause').innerHTML="pause";
     flagTimer='resume';
+    chart.data.datasets[0].data=[0];
+	chart.data.datasets[1].data=[0];
+    chart.update();
     document.getElementById("bets").style.display="block";
+    document.getElementById("whitespace").style.display="none";
+    document.getElementById("charts").style.display="block";
   }  else if (flagTimer=='resume') {
     ajax('Pause');
     document.getElementById('Pause').innerHTML="resume";
@@ -119,6 +126,7 @@ function pause() {
 var OverCount = 0;
 var UnderCount = 0;
 var voteCount = 0;
+var startTime = 0;
 
 function fetch(ind,ele,ind2,ele2,ind3,ele3) {
 if (window.XMLHttpRequest) {
@@ -137,6 +145,14 @@ if ((init_request.readyState == 4 && init_request.status >= 200 && init_request.
     var o = s[3].split(":");
     OverCount = s[4];
     UnderCount = s[5];
+    var newStart = s[6];
+    if (startTime == 0) {
+    	startTime = newStart;
+    }
+    if (startTime != newStart) {
+    	voteCount = 0;
+    	startTime = newStart;
+    }
     var totalHrs = 0;
     var totalMins = 0;
     var totalSecs = 0;
@@ -159,10 +175,11 @@ if (s[1] == "pause") {
     totalMins=t[ind2];
     totalSecs=t[ind3];
     document.getElementById('Pause').innerHTML="resume";
+    document.getElementById("charts").style.display="block";
     flagTimer='pause';
     if (voteCount == 0) {
-	    document.getElementById("charts").style.display="block";
     	document.getElementById("bets").style.display="block";
+    	document.getElementById("whitespace").style.display="none";
     }
 
 } else if (s[1] == "clear") {
@@ -177,9 +194,10 @@ if (s[1] == "pause") {
 }else {
     document.getElementById('Pause').innerHTML="pause";
     flagTimer='resume';
+    document.getElementById("charts").style.display="block";
     if (voteCount == 0) {
-	    document.getElementById("charts").style.display="block";
     	document.getElementById("bets").style.display="block";
+    	document.getElementById("whitespace").style.display="none";
     }
 }
 document.getElementById(ele).innerHTML=totalHrs;
@@ -212,8 +230,8 @@ if ((rawTime % 60 == 0) && (rawTime > 60) && (document.getElementById('Pause').i
 	    OvrUnd('Minute');
 }
 
-chart.data.datasets[0].data=[UnderCount];
-chart.data.datasets[1].data=[OverCount];
+chart.data.datasets[0].data=[OverCount];
+chart.data.datasets[1].data=[UnderCount];
 chart.update();
 
 setTimeout(fetch,1000,0,"hours",1,"minutes",2,"seconds")
@@ -280,7 +298,11 @@ over/under<br>
    <button id="Over" class="btn" onClick="vote('Over');">+</button><span style="font-size:4em">/</span>   
    <button id="Under" class="btn" onClick="vote('Under');">-</button>
 </div>
-<div id="charts" style="display:none;text-align:center;margin:auto;height:25vh; width:50vw">
+<div id="whitespace" style="text-align:center;display:none;color:white">
+   <button id="Over" class="btn" style="color:white" onClick="">+</button><span style="font-size:4em">/</span>   
+   <button id="Under" class="btn" style="color:white" onClick="">-</button>
+</div>
+<div id="charts" style="display:none;text-align:center;margin:auto;height:20vh; width:20vw">
 <canvas id="myChart" style="display:inline"></canvas>
 </div>
 <script>
@@ -291,30 +313,42 @@ var chart = new Chart(ctx, {
 
     // The data for our dataset
     data: {
-        labels: ["Over / Under"],
+        labels: [""],
         datasets: [{
-            label: "Under",
-            backgroundColor: 'rgb(255, 99, 132)',
-            borderColor: 'rgb(255, 99, 132)',
+            label: "Over",
+            backgroundColor: 'rgb(66, 134, 244)',
+            borderColor: 'rgb(66, 134, 244)',
             data: [0],
         },
         {
-            label: "Over",
-            backgroundColor: 'rgb(255, 165, 0)',
-            borderColor: 'rgb(255, 165, 0)',
+            label: "Under",
+            backgroundColor: 'rgb(33, 206, 67)',
+            borderColor: 'rgb(33, 206, 67)',
             data: [0],
         }]
     },
 
     // Configuration options go here
     options: {
+    	aspectRatio: 1,
     	scales: {
             yAxes: [{
                 ticks: {
                     suggestedMin: 0,
-                    suggestedMax: 10
+                    suggestedMax: 5
+                },
+                gridLines: {
+                	display: false
                 }
             }]
+        },
+        legend: {
+        	position: "bottom",
+        	labels: {
+	        	fontSize: 13,
+	        	fontStyle: "bold",
+	        	padding: 10
+        	}
         }
     }
 });

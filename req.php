@@ -32,7 +32,7 @@ $sql6 = "SELECT * FROM OverUnder Where time > '$time' AND vote='Under';";
 $res6 = mysqli_query($conn,$sql6);
 $unders = mysqli_num_rows($res6);
 
-$package = array($row2["DIFF"],$row["status"],$row["readout"],$row3["OverUnder"],$overs,$unders);
-echo $package[0] . "," . $package[1] . "," . $package[2] . "," . $package[3] . "," . $package[4] . "," . $package[5];
+$package = array($row2["DIFF"],$row["status"],$row["readout"],$row3["OverUnder"],$overs,$unders,$time);
+echo $package[0] . "," . $package[1] . "," . $package[2] . "," . $package[3] . "," . $package[4] . "," . $package[5] . "," . $package[6];
 mysqli_close($conn);
 ?>
