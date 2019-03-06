@@ -89,14 +89,6 @@ chart.data.datasets[0].data[1]=[0];
 chart.update();
 ajax('Clear');
 flagTimer='start';
-document.getElementById("bets").classList.remove("visible");
-document.getElementById("bets").classList.add("invisible");
-document.getElementById('slider_left').style.backgroundColor="#13294B";
-document.getElementById('slider_left').style.color="#FFF";
-document.getElementById('slider_right').style.backgroundColor="#8D9092";
-document.getElementById('slider_right').style.color="#8D9092";
-document.getElementById('ouToggle').style.display="none";
-document.getElementById('inputDropdown').style="";
 }
 function pause() {
   var ouString = document.getElementById("numberSelect").value;
@@ -120,16 +112,9 @@ function pause() {
 		OvrUnd();
 	    ajax('Pause');
 	    document.getElementById('Pause').innerHTML="pause";
-	    document.getElementById('slider_left').style.backgroundColor="#8D9092";
-		document.getElementById('slider_left').style.color="#8D9092";
-		document.getElementById('slider_right').style.backgroundColor="#7BAFD4";
-		document.getElementById('slider_right').style.color="#FFF";
-		document.getElementById('ouToggle').style="";
-		document.getElementById('inputDropdown').style="display:none";
 	    flagTimer='resume';
 	    chart.update();
 		document.getElementById("bets").classList.add("visible");
-		document.getElementById("bets").classList.remove("invisible");
 
 
 
